@@ -9,15 +9,16 @@ export default function RightPanel() {
   const generateVideo = () => {
     setLoading(true);
 
+    // Timeline-ku signal anuppudhu
+    window.dispatchEvent(new Event("generate-video"));
+
     setTimeout(() => {
       setLoading(false);
-      alert("🎉 Video generated successfully! (AI integration next)");
     }, 3000);
   };
 
   return (
     <aside className="w-80 bg-zinc-900 border-l border-zinc-800 p-6 overflow-y-auto text-white">
-
       <h2 className="text-2xl font-bold mb-6">
         AI Controls
       </h2>
@@ -36,7 +37,7 @@ export default function RightPanel() {
 
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-2">
-          <Move size={18}/>
+          <Move size={18} />
           <span>Motion Strength</span>
         </div>
 
@@ -51,7 +52,7 @@ export default function RightPanel() {
 
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-2">
-          <Camera size={18}/>
+          <Camera size={18} />
           <span>Camera Movement</span>
         </div>
 
@@ -66,7 +67,7 @@ export default function RightPanel() {
 
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-2">
-          <Wand2 size={18}/>
+          <Wand2 size={18} />
           <span>Creativity</span>
         </div>
 
@@ -86,7 +87,6 @@ export default function RightPanel() {
       >
         {loading ? "⏳ Generating..." : "🚀 Generate Video"}
       </button>
-
     </aside>
   );
 }
