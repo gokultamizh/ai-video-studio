@@ -1,21 +1,43 @@
 import Navbar from "./components/Navbar";
-import Sidebar from "./components/Sidebar";
-import Preview from "./components/Preview";
+import CharacterUpload from "./components/upload/CharacterUpload";
+import VideoUpload from "./components/upload/VideoUpload";
 import RightPanel from "./components/RightPanel";
 import Timeline from "./components/Timeline";
 
 export default function Home() {
   return (
-    <main className="bg-black min-h-screen">
+    <main className="min-h-screen bg-black text-white">
       <Navbar />
 
-      <div className="flex h-[calc(100vh-64px-128px)]">
-        <Sidebar />
-        <Preview />
-        <RightPanel />
-      </div>
+      <div className="max-w-7xl mx-auto px-6 py-8">
 
-      <Timeline />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+
+          <div>
+            <h2 className="text-2xl font-bold mb-4">
+              Character Image
+            </h2>
+
+            <CharacterUpload />
+          </div>
+
+          <div>
+            <h2 className="text-2xl font-bold mb-4">
+              Reference Video
+            </h2>
+
+            <VideoUpload />
+          </div>
+
+        </div>
+
+        <div className="mb-8">
+          <RightPanel />
+        </div>
+
+        <Timeline />
+
+      </div>
     </main>
   );
 }

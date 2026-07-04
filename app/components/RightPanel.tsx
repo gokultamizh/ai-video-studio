@@ -5,47 +5,70 @@ import { Camera, Move, Wand2 } from "lucide-react";
 
 export default function RightPanel() {
   const [loading, setLoading] = useState(false);
+  const [prompt, setPrompt] = useState("");
 
-  const generateVideo = () => {
+  async function generateVideo() {
     setLoading(true);
 
-    // Timeline-ku signal anuppudhu
-    window.dispatchEvent(new Event("generate-video"));
+    try {
+      const response = await fetch("/api/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt,
+          motionStrength: 50,
+          camera: "None",
+          creativity: 70,
+        }),
+      });
 
-    setTimeout(() => {
-      setLoading(false);
-    }, 3000);
-  };
+      const result = await response.json();
+
+      console.log(result);
+
+      window.dispatchEvent(new Event("generate-video"));
+
+      alert(result.message);
+
+    } catch (error) {
+      console.error(error);
+
+      alert("API Error");
+    }
+
+    setLoading(false);
+  }
 
   return (
-    <aside className="w-80 bg-zinc-900 border-l border-zinc-800 p-6 overflow-y-auto text-white">
+    <div className="bg-zinc-900 rounded-2xl p-6 border border-zinc-800 text-white">
+
       <h2 className="text-2xl font-bold mb-6">
         AI Controls
       </h2>
 
-      <div className="mb-6">
-        <label className="text-sm text-gray-400">
-          Prompt
-        </label>
+      <label className="text-gray-400">
+        Prompt
+      </label>
 
-        <textarea
-          rows={5}
-          placeholder="Describe your video..."
-          className="mt-2 w-full rounded-xl bg-zinc-800 border border-zinc-700 p-3 outline-none focus:border-purple-500"
-        />
-      </div>
+      <textarea
+        rows={5}
+        value={prompt}
+        onChange={(e) => setPrompt(e.target.value)}
+        placeholder="Replace the actor with my uploaded character..."
+        className="mt-2 mb-6 w-full rounded-xl bg-zinc-800 border border-zinc-700 p-3 outline-none"
+      />
 
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-2">
           <Move size={18} />
-          <span>Motion Strength</span>
+          Motion Strength
         </div>
 
         <input
           type="range"
-          min="0"
-          max="100"
-          defaultValue="50"
+          defaultValue={50}
           className="w-full"
         />
       </div>
@@ -53,10 +76,10 @@ export default function RightPanel() {
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-2">
           <Camera size={18} />
-          <span>Camera Movement</span>
+          Camera Movement
         </div>
 
-        <select className="w-full bg-zinc-800 rounded-xl p-3">
+        <select className="w-full rounded-xl bg-zinc-800 p-3">
           <option>None</option>
           <option>Zoom In</option>
           <option>Zoom Out</option>
@@ -68,14 +91,12 @@ export default function RightPanel() {
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-2">
           <Wand2 size={18} />
-          <span>Creativity</span>
+          Creativity
         </div>
 
         <input
           type="range"
-          min="0"
-          max="100"
-          defaultValue="70"
+          defaultValue={70}
           className="w-full"
         />
       </div>
@@ -83,10 +104,11 @@ export default function RightPanel() {
       <button
         onClick={generateVideo}
         disabled={loading}
-        className="w-full bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl py-4 font-bold hover:scale-105 transition disabled:opacity-60"
+        className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 py-4 font-bold hover:scale-105 transition"
       >
         {loading ? "⏳ Generating..." : "🚀 Generate Video"}
       </button>
-    </aside>
+
+    </div>
   );
 }
