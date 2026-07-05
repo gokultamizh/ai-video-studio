@@ -7,21 +7,26 @@ import { Video, X } from "lucide-react";
 type VideoUploadProps = {
   video: string | null;
   setVideo: React.Dispatch<React.SetStateAction<string | null>>;
+  videoFile: File | null;
+  setVideoFile: React.Dispatch<React.SetStateAction<File | null>>;
 };
 
 export default function VideoUpload({
   video,
   setVideo,
+  videoFile,
+  setVideoFile,
 }: VideoUploadProps) {
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       if (acceptedFiles.length > 0) {
         const file = acceptedFiles[0];
-        const videoUrl = URL.createObjectURL(file);
-        setVideo(videoUrl);
+
+        setVideo(URL.createObjectURL(file));
+        setVideoFile(file);
       }
     },
-    [setVideo]
+    [setVideo, setVideoFile]
   );
 
   const { getRootProps, getInputProps, open } = useDropzone({
@@ -43,7 +48,7 @@ export default function VideoUpload({
       {!video ? (
         <div
           onClick={open}
-          className="text-center text-gray-400 cursor-pointer"
+          className="cursor-pointer text-center text-gray-400"
         >
           <Video size={60} className="mx-auto mb-4" />
 
@@ -66,12 +71,18 @@ export default function VideoUpload({
           <button
             onClick={(e) => {
               e.stopPropagation();
+
               setVideo(null);
+              setVideoFile(null);
             }}
-            className="absolute top-3 right-3 bg-red-600 hover:bg-red-700 p-2 rounded-full"
+            className="absolute top-3 right-3 bg-red-600 hover:bg-red-700 rounded-full p-2"
           >
             <X size={18} className="text-white" />
           </button>
+
+          <div className="absolute bottom-3 left-3 bg-black/70 px-3 py-1 rounded-lg text-sm text-white">
+            {videoFile?.name}
+          </div>
         </>
       )}
     </div>

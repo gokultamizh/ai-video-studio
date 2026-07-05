@@ -6,11 +6,15 @@ import { Camera, Move, Wand2 } from "lucide-react";
 type RightPanelProps = {
   image: string | null;
   video: string | null;
+  imageFile: File | null;
+  videoFile: File | null;
 };
 
 export default function RightPanel({
   image,
   video,
+  imageFile,
+  videoFile,
 }: RightPanelProps) {
   const [loading, setLoading] = useState(false);
   const [prompt, setPrompt] = useState("");
@@ -19,12 +23,12 @@ export default function RightPanel({
   const [creativity, setCreativity] = useState(70);
 
   async function generateVideo() {
-    if (!image) {
+    if (!imageFile) {
       alert("Please upload a character image.");
       return;
     }
 
-    if (!video) {
+    if (!videoFile) {
       alert("Please upload a reference video.");
       return;
     }
@@ -37,19 +41,18 @@ export default function RightPanel({
     setLoading(true);
 
     try {
+      const formData = new FormData();
+
+      formData.append("image", imageFile);
+      formData.append("video", videoFile);
+      formData.append("prompt", prompt);
+      formData.append("motionStrength", motionStrength.toString());
+      formData.append("camera", camera);
+      formData.append("creativity", creativity.toString());
+
       const response = await fetch("/api/generate", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          image,
-          video,
-          prompt,
-          motionStrength,
-          camera,
-          creativity,
-        }),
+        body: formData,
       });
 
       const result = await response.json();
@@ -59,7 +62,7 @@ export default function RightPanel({
       alert(result.message);
     } catch (error) {
       console.error(error);
-      alert("Failed to connect to backend.");
+      alert("Backend connection failed.");
     } finally {
       setLoading(false);
     }
@@ -67,7 +70,6 @@ export default function RightPanel({
 
   return (
     <div className="bg-zinc-900 rounded-2xl border border-zinc-800 p-6 text-white">
-
       <h2 className="text-2xl font-bold mb-6">
         AI Controls
       </h2>
@@ -81,7 +83,7 @@ export default function RightPanel({
           rows={5}
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
-          placeholder="Describe your AI video..."
+          placeholder="Describe what the AI should generate..."
           className="mt-2 w-full rounded-xl bg-zinc-800 border border-zinc-700 p-3 outline-none"
         />
       </div>
@@ -89,7 +91,7 @@ export default function RightPanel({
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-2">
           <Move size={18} />
-          <span>Motion Strength</span>
+          <span>Motion Strength ({motionStrength})</span>
         </div>
 
         <input
@@ -97,15 +99,9 @@ export default function RightPanel({
           min={0}
           max={100}
           value={motionStrength}
-          onChange={(e) =>
-            setMotionStrength(Number(e.target.value))
-          }
+          onChange={(e) => setMotionStrength(Number(e.target.value))}
           className="w-full"
         />
-
-        <p className="text-sm text-gray-400 mt-2">
-          {motionStrength}%
-        </p>
       </div>
 
       <div className="mb-6">
@@ -130,7 +126,7 @@ export default function RightPanel({
       <div className="mb-8">
         <div className="flex items-center gap-2 mb-2">
           <Wand2 size={18} />
-          <span>Creativity</span>
+          <span>Creativity ({creativity})</span>
         </div>
 
         <input
@@ -138,15 +134,9 @@ export default function RightPanel({
           min={0}
           max={100}
           value={creativity}
-          onChange={(e) =>
-            setCreativity(Number(e.target.value))
-          }
+          onChange={(e) => setCreativity(Number(e.target.value))}
           className="w-full"
         />
-
-        <p className="text-sm text-gray-400 mt-2">
-          {creativity}%
-        </p>
       </div>
 
       <button
@@ -156,7 +146,6 @@ export default function RightPanel({
       >
         {loading ? "⏳ Generating..." : "🚀 Generate Video"}
       </button>
-
     </div>
   );
 }

@@ -7,21 +7,26 @@ import { ImagePlus, X } from "lucide-react";
 type CharacterUploadProps = {
   image: string | null;
   setImage: React.Dispatch<React.SetStateAction<string | null>>;
+  imageFile: File | null;
+  setImageFile: React.Dispatch<React.SetStateAction<File | null>>;
 };
 
 export default function CharacterUpload({
   image,
   setImage,
+  imageFile,
+  setImageFile,
 }: CharacterUploadProps) {
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       if (acceptedFiles.length > 0) {
         const file = acceptedFiles[0];
-        const imageUrl = URL.createObjectURL(file);
-        setImage(imageUrl);
+
+        setImage(URL.createObjectURL(file));
+        setImageFile(file);
       }
     },
-    [setImage]
+    [setImage, setImageFile]
   );
 
   const { getRootProps, getInputProps, open } = useDropzone({
@@ -43,7 +48,7 @@ export default function CharacterUpload({
       {!image ? (
         <div
           onClick={open}
-          className="text-center text-gray-400 cursor-pointer"
+          className="cursor-pointer text-center text-gray-400"
         >
           <ImagePlus size={60} className="mx-auto mb-4" />
 
@@ -66,12 +71,18 @@ export default function CharacterUpload({
           <button
             onClick={(e) => {
               e.stopPropagation();
+
               setImage(null);
+              setImageFile(null);
             }}
-            className="absolute top-3 right-3 bg-red-600 hover:bg-red-700 p-2 rounded-full"
+            className="absolute top-3 right-3 bg-red-600 hover:bg-red-700 rounded-full p-2"
           >
             <X size={18} className="text-white" />
           </button>
+
+          <div className="absolute bottom-3 left-3 bg-black/70 px-3 py-1 rounded-lg text-sm text-white">
+            {imageFile?.name}
+          </div>
         </>
       )}
     </div>

@@ -11,6 +11,9 @@ export default function Home() {
   const [image, setImage] = useState<string | null>(null);
   const [video, setVideo] = useState<string | null>(null);
 
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [videoFile, setVideoFile] = useState<File | null>(null);
+
   return (
     <main className="min-h-screen bg-black text-white">
       <Navbar />
@@ -27,6 +30,8 @@ export default function Home() {
             <CharacterUpload
               image={image}
               setImage={setImage}
+              imageFile={imageFile}
+              setImageFile={setImageFile}
             />
           </div>
 
@@ -38,6 +43,8 @@ export default function Home() {
             <VideoUpload
               video={video}
               setVideo={setVideo}
+              videoFile={videoFile}
+              setVideoFile={setVideoFile}
             />
           </div>
 
@@ -47,6 +54,8 @@ export default function Home() {
           <RightPanel
             image={image}
             video={video}
+            imageFile={imageFile}
+            videoFile={videoFile}
           />
         </div>
 
