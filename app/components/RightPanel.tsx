@@ -11,8 +11,6 @@ type RightPanelProps = {
 };
 
 export default function RightPanel({
-  image,
-  video,
   imageFile,
   videoFile,
 }: RightPanelProps) {
@@ -50,19 +48,23 @@ export default function RightPanel({
       formData.append("camera", camera);
       formData.append("creativity", creativity.toString());
 
-      const response = await fetch("/api/generate", {
-        method: "POST",
-        body: formData,
-      });
+      const response = await fetch(
+        "http://127.0.0.1:8000/generate",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
       const result = await response.json();
 
       console.log(result);
 
       alert(result.message);
+
     } catch (error) {
       console.error(error);
-      alert("Backend connection failed.");
+      alert("Failed to connect to Python backend.");
     } finally {
       setLoading(false);
     }
@@ -70,6 +72,7 @@ export default function RightPanel({
 
   return (
     <div className="bg-zinc-900 rounded-2xl border border-zinc-800 p-6 text-white">
+
       <h2 className="text-2xl font-bold mb-6">
         AI Controls
       </h2>
@@ -83,7 +86,7 @@ export default function RightPanel({
           rows={5}
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
-          placeholder="Describe what the AI should generate..."
+          placeholder="Describe the animation..."
           className="mt-2 w-full rounded-xl bg-zinc-800 border border-zinc-700 p-3 outline-none"
         />
       </div>
@@ -144,8 +147,9 @@ export default function RightPanel({
         disabled={loading}
         className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 py-4 font-bold hover:scale-105 transition disabled:opacity-50"
       >
-        {loading ? "⏳ Generating..." : "🚀 Generate Video"}
+        {loading ? "⏳ Uploading..." : "🚀 Generate Video"}
       </button>
+
     </div>
   );
 }
