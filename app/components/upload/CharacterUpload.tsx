@@ -1,22 +1,33 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { ImagePlus, X } from "lucide-react";
 
-export default function CharacterUpload() {
-  const [image, setImage] = useState<string | null>(null);
+type CharacterUploadProps = {
+  image: string | null;
+  setImage: React.Dispatch<React.SetStateAction<string | null>>;
+};
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    if (acceptedFiles.length > 0) {
-      setImage(URL.createObjectURL(acceptedFiles[0]));
-    }
-  }, []);
+export default function CharacterUpload({
+  image,
+  setImage,
+}: CharacterUploadProps) {
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      if (acceptedFiles.length > 0) {
+        const file = acceptedFiles[0];
+        const imageUrl = URL.createObjectURL(file);
+        setImage(imageUrl);
+      }
+    },
+    [setImage]
+  );
 
   const { getRootProps, getInputProps, open } = useDropzone({
     onDrop,
-    multiple: false,
     noClick: true,
+    multiple: false,
     accept: {
       "image/*": [],
     },
@@ -32,7 +43,7 @@ export default function CharacterUpload() {
       {!image ? (
         <div
           onClick={open}
-          className="cursor-pointer text-center text-gray-400"
+          className="text-center text-gray-400 cursor-pointer"
         >
           <ImagePlus size={60} className="mx-auto mb-4" />
 
@@ -40,7 +51,7 @@ export default function CharacterUpload() {
             Upload Character
           </h2>
 
-          <p className="mt-2 text-sm">
+          <p className="mt-2">
             PNG / JPG / WEBP
           </p>
         </div>
@@ -57,7 +68,7 @@ export default function CharacterUpload() {
               e.stopPropagation();
               setImage(null);
             }}
-            className="absolute top-3 right-3 bg-red-600 hover:bg-red-700 rounded-full p-2"
+            className="absolute top-3 right-3 bg-red-600 hover:bg-red-700 p-2 rounded-full"
           >
             <X size={18} className="text-white" />
           </button>

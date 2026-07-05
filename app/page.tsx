@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import Navbar from "./components/Navbar";
 import CharacterUpload from "./components/upload/CharacterUpload";
 import VideoUpload from "./components/upload/VideoUpload";
@@ -5,6 +8,9 @@ import RightPanel from "./components/RightPanel";
 import Timeline from "./components/Timeline";
 
 export default function Home() {
+  const [image, setImage] = useState<string | null>(null);
+  const [video, setVideo] = useState<string | null>(null);
+
   return (
     <main className="min-h-screen bg-black text-white">
       <Navbar />
@@ -18,7 +24,10 @@ export default function Home() {
               Character Image
             </h2>
 
-            <CharacterUpload />
+            <CharacterUpload
+              image={image}
+              setImage={setImage}
+            />
           </div>
 
           <div>
@@ -26,13 +35,19 @@ export default function Home() {
               Reference Video
             </h2>
 
-            <VideoUpload />
+            <VideoUpload
+              video={video}
+              setVideo={setVideo}
+            />
           </div>
 
         </div>
 
         <div className="mb-8">
-          <RightPanel />
+          <RightPanel
+            image={image}
+            video={video}
+          />
         </div>
 
         <Timeline />

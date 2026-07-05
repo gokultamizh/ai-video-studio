@@ -3,11 +3,37 @@
 import { useState } from "react";
 import { Camera, Move, Wand2 } from "lucide-react";
 
-export default function RightPanel() {
+type RightPanelProps = {
+  image: string | null;
+  video: string | null;
+};
+
+export default function RightPanel({
+  image,
+  video,
+}: RightPanelProps) {
   const [loading, setLoading] = useState(false);
   const [prompt, setPrompt] = useState("");
+  const [motionStrength, setMotionStrength] = useState(50);
+  const [camera, setCamera] = useState("None");
+  const [creativity, setCreativity] = useState(70);
 
   async function generateVideo() {
+    if (!image) {
+      alert("Please upload a character image.");
+      return;
+    }
+
+    if (!video) {
+      alert("Please upload a reference video.");
+      return;
+    }
+
+    if (!prompt.trim()) {
+      alert("Please enter a prompt.");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -17,10 +43,12 @@ export default function RightPanel() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          image,
+          video,
           prompt,
-          motionStrength: 50,
-          camera: "None",
-          creativity: 70,
+          motionStrength,
+          camera,
+          creativity,
         }),
       });
 
@@ -28,58 +56,69 @@ export default function RightPanel() {
 
       console.log(result);
 
-      window.dispatchEvent(new Event("generate-video"));
-
       alert(result.message);
-
     } catch (error) {
       console.error(error);
-
-      alert("API Error");
+      alert("Failed to connect to backend.");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   }
 
   return (
-    <div className="bg-zinc-900 rounded-2xl p-6 border border-zinc-800 text-white">
+    <div className="bg-zinc-900 rounded-2xl border border-zinc-800 p-6 text-white">
 
       <h2 className="text-2xl font-bold mb-6">
         AI Controls
       </h2>
 
-      <label className="text-gray-400">
-        Prompt
-      </label>
-
-      <textarea
-        rows={5}
-        value={prompt}
-        onChange={(e) => setPrompt(e.target.value)}
-        placeholder="Replace the actor with my uploaded character..."
-        className="mt-2 mb-6 w-full rounded-xl bg-zinc-800 border border-zinc-700 p-3 outline-none"
-      />
-
       <div className="mb-6">
-        <div className="flex items-center gap-2 mb-2">
-          <Move size={18} />
-          Motion Strength
-        </div>
+        <label className="text-sm text-gray-400">
+          Prompt
+        </label>
 
-        <input
-          type="range"
-          defaultValue={50}
-          className="w-full"
+        <textarea
+          rows={5}
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          placeholder="Describe your AI video..."
+          className="mt-2 w-full rounded-xl bg-zinc-800 border border-zinc-700 p-3 outline-none"
         />
       </div>
 
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-2">
-          <Camera size={18} />
-          Camera Movement
+          <Move size={18} />
+          <span>Motion Strength</span>
         </div>
 
-        <select className="w-full rounded-xl bg-zinc-800 p-3">
+        <input
+          type="range"
+          min={0}
+          max={100}
+          value={motionStrength}
+          onChange={(e) =>
+            setMotionStrength(Number(e.target.value))
+          }
+          className="w-full"
+        />
+
+        <p className="text-sm text-gray-400 mt-2">
+          {motionStrength}%
+        </p>
+      </div>
+
+      <div className="mb-6">
+        <div className="flex items-center gap-2 mb-2">
+          <Camera size={18} />
+          <span>Camera Movement</span>
+        </div>
+
+        <select
+          value={camera}
+          onChange={(e) => setCamera(e.target.value)}
+          className="w-full rounded-xl bg-zinc-800 border border-zinc-700 p-3"
+        >
           <option>None</option>
           <option>Zoom In</option>
           <option>Zoom Out</option>
@@ -88,23 +127,32 @@ export default function RightPanel() {
         </select>
       </div>
 
-      <div className="mb-6">
+      <div className="mb-8">
         <div className="flex items-center gap-2 mb-2">
           <Wand2 size={18} />
-          Creativity
+          <span>Creativity</span>
         </div>
 
         <input
           type="range"
-          defaultValue={70}
+          min={0}
+          max={100}
+          value={creativity}
+          onChange={(e) =>
+            setCreativity(Number(e.target.value))
+          }
           className="w-full"
         />
+
+        <p className="text-sm text-gray-400 mt-2">
+          {creativity}%
+        </p>
       </div>
 
       <button
         onClick={generateVideo}
         disabled={loading}
-        className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 py-4 font-bold hover:scale-105 transition"
+        className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 py-4 font-bold hover:scale-105 transition disabled:opacity-50"
       >
         {loading ? "⏳ Generating..." : "🚀 Generate Video"}
       </button>

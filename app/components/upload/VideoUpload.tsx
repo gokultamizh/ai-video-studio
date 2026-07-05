@@ -1,17 +1,28 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { Video, X } from "lucide-react";
 
-export default function VideoUpload() {
-  const [video, setVideo] = useState<string | null>(null);
+type VideoUploadProps = {
+  video: string | null;
+  setVideo: React.Dispatch<React.SetStateAction<string | null>>;
+};
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    if (acceptedFiles.length > 0) {
-      setVideo(URL.createObjectURL(acceptedFiles[0]));
-    }
-  }, []);
+export default function VideoUpload({
+  video,
+  setVideo,
+}: VideoUploadProps) {
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      if (acceptedFiles.length > 0) {
+        const file = acceptedFiles[0];
+        const videoUrl = URL.createObjectURL(file);
+        setVideo(videoUrl);
+      }
+    },
+    [setVideo]
+  );
 
   const { getRootProps, getInputProps, open } = useDropzone({
     onDrop,
@@ -32,7 +43,7 @@ export default function VideoUpload() {
       {!video ? (
         <div
           onClick={open}
-          className="cursor-pointer text-center text-gray-400"
+          className="text-center text-gray-400 cursor-pointer"
         >
           <Video size={60} className="mx-auto mb-4" />
 
@@ -40,25 +51,24 @@ export default function VideoUpload() {
             Upload Reference Video
           </h2>
 
-          <p className="mt-2 text-sm">
+          <p className="mt-2">
             MP4 / MOV / WEBM
           </p>
         </div>
       ) : (
         <>
           <video
+            src={video}
             controls
             className="w-full h-full object-contain"
-          >
-            <source src={video} />
-          </video>
+          />
 
           <button
             onClick={(e) => {
               e.stopPropagation();
               setVideo(null);
             }}
-            className="absolute top-3 right-3 bg-red-600 hover:bg-red-700 rounded-full p-2"
+            className="absolute top-3 right-3 bg-red-600 hover:bg-red-700 p-2 rounded-full"
           >
             <X size={18} className="text-white" />
           </button>
